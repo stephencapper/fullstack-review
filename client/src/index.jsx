@@ -5,7 +5,7 @@ import Search from './components/Search.jsx';
 import RepoList from './components/RepoList.jsx';
 import Axios from 'axios';
 const axiosServer = Axios.create({
-  baseURL: '127.0.0.1:1128'
+  baseURL: ''
 });
 
 const App = () => {
@@ -15,7 +15,7 @@ const App = () => {
 
   //POST username to server when addRepos changes
   useEffect(() => {
-    console.log('adding repos');
+    console.log('adding repos', addRepos);
     if (addRepos === '') {
       return;
     }
