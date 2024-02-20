@@ -1,22 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import Search from './components/Search.jsx';
 import RepoList from './components/RepoList.jsx';
+import Axios from 'axios';
+const axiosServer = Axios.create({
+  baseURL: '127.0.0.1:1128'
+});
 
 const App = () => {
 
   const [repos, setRepos] = useState([]);
+  const [addRepos, setAddRepos] = useState('');
 
-  const search = (term) => {
-    console.log(`${term} was searched`);
-  }
+  //POST username to server when addRepos changes
+  useEffect(() => {
+    console.log('adding repos');
+    if (addRepos === '') {
+      return;
+    }
+    axiosServer.post('/repos', {
+      username: addRepos
+    })
+    .then((response) => {
+      console.log('Add repos successful: ', response.status, ' ', response.statusText)
+    })
+    .catch((error) => {
+      alert('Unable to add repos, see console for details');
+      if (error.response) {
+        console.log('Error adding repos in server: ', error.response.status);
+      } else if (error.request) {
+        console.log('Error adding repos in server, request made no response: ', error.request);
+      } else {
+        console.log('Error creating request to add repos to server: ', error.message);
+      }
+    });
+    return;
+  }, [addRepos]);
 
   return (
     <div>
       <h1>Github Fetcher</h1>
       <RepoList repos={repos}/>
-      <Search onSearch={search}/>
+      <Search setAddRepos={setAddRepos}/>
     </div>
   );
 }
