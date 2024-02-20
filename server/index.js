@@ -28,7 +28,7 @@ app.post('/repos', function (req, res) {
       return;
     }
     // if no error call db.save on repos
-    console.log('able to get repos fromm github: ', repos);
+    console.log('able to get repos fromm github');
     db.save(username, repos, (err) => {
       if (err) {
         res.status(500).send('Unable to add repos to database');
@@ -42,9 +42,15 @@ app.post('/repos', function (req, res) {
   });
 });
 
-app.get('/repos', function (req, res) {
+app.get('/repos/top25', function (req, res) {
   // TODO - your code here!
-  // This route should send back the top 25 repos
+  db.findTop25Repos((err, repos) => {
+    if (err) {
+      res.status(500).send('Unable to obtain repos from server');
+      return;
+    }
+    res.status(200).send(repos);
+  });
 });
 
 let port = 1128;

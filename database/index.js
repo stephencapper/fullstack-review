@@ -25,8 +25,6 @@ const save = (username, repos, callback) => {
   // This function should save a repo or repos to
   // the MongoDB
 
-
-
   // remove duplicates from repos, and update repo objects to only store required properties
   let mappedRepos = repos.map((repo) => {
     let { node_id, name, full_name, html_url, stargazers_count, forks_count, owner } = repo;
@@ -41,7 +39,10 @@ const save = (username, repos, callback) => {
   });
   // find user's repos already in database if exists
   Repos.findOne({ username }, (err, doc) => {
-    if (err) {
+    if (err || !doc) {
+      if (err) {
+        console.log('Error findine username', err.name);
+      }
       //create new instance of Repos for user
       let userRepos = new Repos;
       //add username property
@@ -54,9 +55,42 @@ const save = (username, repos, callback) => {
       return;
     }
     //if user already exists, replace the repo subdocuments for user with latest ones
-    doc.repos = repos;
+    doc.repos = filteredRepos;
     doc.save(callback);
   });
 };
 
+const findTop25Repos = (callback) => {
+  Repos.find({}, (err, documents) => {
+    if (err) {
+      callback(err);
+      return;
+    }
+    let top25Repos = [];
+    for (let document of documents) {
+      for (let repo of document.repos) {
+        let repoAdded = false;
+        for (let i = 0; i < top25Repos.length; i++) {
+          if (repo.stargazers_count >= top25Repos[i].stargazers_count) {
+            for (let j = top25Repos.length; j > i; j--) {
+              top25Repos[j] = top25Repos[j - 1];
+            }
+            top25Repos[i] = repo;
+            if (top25Repos.length > 25) {
+              top25Repos.pop();
+            }
+            repoAdded = true;
+            break;
+          }
+        }
+        if (!repoAdded && top25Repos.length < 25) {
+          top25Repos.push(repo);
+        }
+      }
+    }
+    callback(null, top25Repos);
+  });
+}
+
 module.exports.save = save;
+module.exports.findTop25Repos = findTop25Repos;
