@@ -23,20 +23,38 @@ const App = () => {
       username: addRepos
     })
     .then((response) => {
-      console.log('Add repos successful: ', response.status, ' ', response.statusText)
+      console.log('Add repos successful: ', response.status, ' ', response.statusText);
     })
     .catch((error) => {
       alert('Unable to add repos, see console for details');
       if (error.response) {
         console.log('Error adding repos in server: ', error.response.status);
       } else if (error.request) {
-        console.log('Error adding repos in server, request made no response: ', error.request);
+        console.log('Error adding repos in server, no response to request: ', error.request);
       } else {
         console.log('Error creating request to add repos to server: ', error.message);
       }
     });
     return;
   }, [addRepos]);
+
+  useEffect(() => {
+    axiosServer.get('/repos/top25')
+      .then((response) => {
+        console.log('Get repos successful: ', response.status, ' ', response.statusText);
+        setRepos(response.data);
+      })
+      .catch((error) => {
+        alert('Unable to fetch repos, see console for details');
+        if (error.response) {
+          console.log('Error getting repos from server: ', error.response.status);
+        } else if (error.request) {
+          console.log('Error getting repos from server, no response to request: ', error.request);
+        } else {
+          console.log('Error creating request to get repos from server: ', error.message);
+        }
+      });
+  }, [setRepos]);
 
   return (
     <div>
