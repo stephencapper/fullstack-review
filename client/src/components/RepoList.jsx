@@ -5,7 +5,7 @@ const RepoList = ({ repos }) => {
   const renderRepos = (repos) => {
     let repoElements = [];
     for (let repo of repos) {
-      repoElements.push(<Repo repo={repo}/>);
+      repoElements.push(<Repo  key={repo.node_id} repo={repo}/>);
     }
     return repoElements;
   };

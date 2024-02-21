@@ -9,11 +9,7 @@ const Search = ({ setAddRepos }) => {
   }
 
   const handleAddRepos = () => {
-    console.log('adding repos first step');
-    console.log('term: ', term);
-    console.log('term is empty?: ', term !== '');
     if (term !== '') {
-      console.log('adding repos second step');
       setAddRepos(term);
     } else {
       alert('No username entered');

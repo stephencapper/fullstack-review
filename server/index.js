@@ -29,27 +29,31 @@ app.post('/repos', function (req, res) {
     }
     // if no error call db.save on repos
     console.log('able to get repos fromm github');
-    db.save(username, repos, (err) => {
-      if (err) {
-        res.status(500).send('Unable to add repos to database');
-        console.log('database posting error: ',err);
-        return;
-      }
-      //if no error, pass success to client
+    db.save(username, repos)
+    .then(() => {
       console.log('Success posting repos fromm github');
       res.status(201).end();
+    }).catch((err) => {
+      res.status(500).send('Unable to add repos to database');
+      console.log('database posting error: ', err);
     });
   });
 });
 
 app.get('/repos/top25', function (req, res) {
   // TODO - your code here!
-  db.findTop25Repos((err, repos) => {
-    if (err) {
-      res.status(500).send('Unable to obtain repos from server');
-      return;
-    }
+  // db.findTop25Repos((err, repos) => {
+  //   if (err) {
+  //     res.status(500).send('Unable to obtain repos from server');
+  //     return;
+  //   }
+  //   res.status(200).send(repos);
+  // });
+  db.findTop25Repos()
+  .then((repos) => {
     res.status(200).send(repos);
+  }).catch((err) => {
+    res.status(500).send('Unable to obtain repos from server');
   });
 });
 
